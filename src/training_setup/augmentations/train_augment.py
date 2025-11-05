@@ -16,6 +16,8 @@ def get_train_transforms():
         RandFlipd(keys=keys, prob=0.5, spatial_axis=0),
         RandAffined(keys=keys, prob=0.3, rotate_range=(0.05,0.05,0.05), scale_range=(0.1,0.1,0.0), mode=('bilinear','bilinear','bilinear','nearest')),
         RandZoomd(keys=keys, prob=0.2, min_zoom=0.9, max_zoom=1.1, mode=('bilinear','bilinear','bilinear','nearest')),
-        RandGridDistortiond(keys=keys, prob=0.15, sigma_range=(5,7), magnitude_range=(50,80), mode=('bilinear','bilinear','bilinear','nearest')),
+        # RandGridDistortiond(keys=keys, prob=0.15, sigma_range=(5,7), magnitude_range=(50,80), mode=('bilinear','bilinear','bilinear','nearest')),
+        RandGridDistortiond(keys=keys, prob=0.25, distort_limit=0.05,
+                            mode=("bilinear","bilinear","bilinear"))
         EnsureTyped(keys=keys),
     ])
