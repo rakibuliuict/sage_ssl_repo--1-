@@ -6,10 +6,10 @@ from torch.utils.data import Dataset as TorchDataset
 from monai.utils import set_determinism
 
 # Imports aligned with your earlier structure (no "src." prefix)
-from training_setup.augmentations.train_augment import get_train_transforms
-from training_setup.augmentations.test_augment import get_test_transforms
+from ..training_setup.augmentations.train_augment import get_train_transforms
+from ..training_setup.augmentations.test_augment import get_test_transforms
 try:
-    from training_setup.augmentations.unlabeled_augment import (
+    from ..training_setup.augmentations.unlabeled_augment import (
         get_unlabeled_weak_transforms, get_unlabeled_strong_transforms
     )
 except Exception:
@@ -30,9 +30,9 @@ def _collect_labeled(in_dir: str) -> List[Dict]:
     Build labeled samples from TrainVolume/* joined by pid:
     returns [{"patient_id", "t2w","adc","hbv","seg"}, ...]
     """
-    t2w = sorted(glob(os.path.join(in_dir, "TrainVolume", "t2w", "*.nii.gz")))
-    adc = sorted(glob(os.path.join(in_dir, "TrainVolume", "adc", "*.nii.gz")))
-    hbv = sorted(glob(os.path.join(in_dir, "TrainVolume", "hbv", "*.nii.gz")))
+    t2w = sorted(glob(os.path.join(in_dir, "TrainVolumes", "t2w", "*.nii.gz")))
+    adc = sorted(glob(os.path.join(in_dir, "TrainVolumes", "adc", "*.nii.gz")))
+    hbv = sorted(glob(os.path.join(in_dir, "TrainVolumes", "hbv", "*.nii.gz")))
     seg = sorted(glob(os.path.join(in_dir, "Binary_TrainSegmentation", "*.nii.gz")))
 
     i_t2w = _index_by_pid(t2w)
@@ -54,9 +54,9 @@ def _collect_val(in_dir: str) -> List[Dict]:
     """
     Build validation samples from ValidVolume/* joined by pid.
     """
-    t2w = sorted(glob(os.path.join(in_dir, "ValidVolume", "t2w", "*.nii.gz")))
-    adc = sorted(glob(os.path.join(in_dir, "ValidVolume", "adc", "*.nii.gz")))
-    hbv = sorted(glob(os.path.join(in_dir, "ValidVolume", "hbv", "*.nii.gz")))
+    t2w = sorted(glob(os.path.join(in_dir, "ValidVolumes", "t2w", "*.nii.gz")))
+    adc = sorted(glob(os.path.join(in_dir, "ValidVolumes", "adc", "*.nii.gz")))
+    hbv = sorted(glob(os.path.join(in_dir, "ValidVolumes", "hbv", "*.nii.gz")))
     seg = sorted(glob(os.path.join(in_dir, "Binary_ValidSegmentation", "*.nii.gz")))
 
     i_t2w = _index_by_pid(t2w)
@@ -79,9 +79,9 @@ def _collect_unlabeled(in_dir: str) -> List[Dict]:
     Build unlabeled samples from UnlabeledVolume/* joined by pid.
     returns [{"patient_id","t2w","adc","hbv"}, ...]
     """
-    t2w = sorted(glob(os.path.join(in_dir, "UnlabeledVolume", "t2w", "*.nii.gz")))
-    adc = sorted(glob(os.path.join(in_dir, "UnlabeledVolume", "adc", "*.nii.gz")))
-    hbv = sorted(glob(os.path.join(in_dir, "UnlabeledVolume", "hbv", "*.nii.gz")))
+    t2w = sorted(glob(os.path.join(in_dir, "UnlabeledVolumes", "t2w", "*.nii.gz")))
+    adc = sorted(glob(os.path.join(in_dir, "UnlabeledVolumes", "adc", "*.nii.gz")))
+    hbv = sorted(glob(os.path.join(in_dir, "UnlabeledVolumes", "hbv", "*.nii.gz")))
 
     i_t2w = _index_by_pid(t2w)
     i_adc = _index_by_pid(adc)
