@@ -3,6 +3,7 @@ from glob import glob
 import random
 from typing import List, Optional, Dict, Callable, Tuple
 from monai.data import DataLoader, Dataset, CacheDataset
+from torch.utils.data import Dataset as TorchDataset
 from monai.utils import set_determinism
 from src.training_setup.augmentations.train_augment import get_train_transforms
 from src.training_setup.augmentations.test_augment import get_test_transforms
@@ -42,7 +43,7 @@ def _split_labeled_unlabeled(train_samples: List[Dict], labeled_fraction: float=
     unlabeled = [pid_to_sample[pid] for pid in all_pids if pid not in labeled_pids]
     unlabeled = [{k: v for k, v in s.items() if k != "seg"} for s in unlabeled]
     return labeled, unlabeled
-class DualViewUnlabeledDataset(Dataset):
+class DualViewUnlabeledDataset(TorchDataset):
     def __init__(
         self,
         data: List[Dict],
