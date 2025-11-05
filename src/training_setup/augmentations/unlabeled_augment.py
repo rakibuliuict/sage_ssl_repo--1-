@@ -35,7 +35,7 @@ def get_unlabeled_strong_transforms():
         RandZoomd(keys=keys, prob=0.3, min_zoom=0.85, max_zoom=1.15,
                   mode=("bilinear","bilinear","bilinear")),
         # Replaces RandElasticd
-        RandGridDistortiond(keys=keys, prob=0.25, distort_limit=0.05,
-                            mode=("bilinear","bilinear","bilinear")),
+        # RandGridDistortiond(keys=keys, prob=0.25, distort_limit=0.05,
+                            # mode=("bilinear","bilinear","bilinear")),
         EnsureTyped(keys=keys),
     ])
