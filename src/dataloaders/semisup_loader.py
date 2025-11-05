@@ -43,32 +43,71 @@ def _split_labeled_unlabeled(train_samples: List[Dict], labeled_fraction: float=
     unlabeled = [{k: v for k, v in s.items() if k != "seg"} for s in unlabeled]
     return labeled, unlabeled
 class DualViewUnlabeledDataset(Dataset):
-    # produces two augmented views per sample
-    def __init__(self, data: List[Dict], weak_transform: Callable, strong_transform: Callable, cache: bool=False, cache_rate: float=1.0):
-        self.weak_transform = weak_transform; self.strong_transform = strong_transform
-        base = CacheDataset if cache else Dataset
-        self.base_ds = base(data=data, transform=None, cache_rate=cache_rate)
-    def __len__(self): return len(self.base_ds)
-    def __getitem__(self, index):
-        sample = self.base_ds[index]
-        x1 = {"t2w": sample["t2w"], "adc": sample["adc"], "hbv": sample["hbv"]}
-        x2 = {"t2w": sample["t2w"], "adc": sample["adc"], "hbv": sample["hbv"]}
-        v1 = self.weak_transform(x1); v2 = self.strong_transform(x2)
-        return {"patient_id": sample.get("patient_id"), "view1": v1, "view2": v2}
-def prepare_semi_supervised(in_dir: str, cache: bool=False, cache_rate: float=1.0, batch_size_labeled: int=1, batch_size_unlabeled: int=1, batch_size_val: int=1, labeled_fraction: float=0.1, labeled_patient_ids: Optional[List[str]]=None, seed: int=0, labeled_transform: Optional[Callable]=None, val_transform: Optional[Callable]=None, unlabeled_weak_transform: Optional[Callable]=None, unlabeled_strong_transform: Optional[Callable]=None):
+    def __init__(
+        self,
+        data: List[Dict],
+        weak_transform: Callable,
+        strong_transform: Callable,
+        cache: bool = False,
+        cache_rate: float = 1.0,
+    ):
+        self.weak_transform = weak_transform
+        self.strong_transform = strong_transform
+
+        if cache:
+            base = CacheDataset
+            self.base_ds = base(data=data, transform=None, cache_rate=cache_rate)
+        else:
+            base = Dataset
+            self.base_ds = base(data=data, transform=None)  # <- no cache_rate here
+
+def prepare_semi_supervised(
+    in_dir: str,
+    cache: bool = False,
+    cache_rate: float = 1.0,
+    batch_size_labeled: int = 1,
+    batch_size_unlabeled: int = 1,
+    batch_size_val: int = 1,
+    labeled_fraction: float = 0.1,
+    labeled_patient_ids: Optional[List[str]] = None,
+    seed: int = 0,
+    labeled_transform: Optional[Callable] = None,
+    val_transform: Optional[Callable] = None,
+    unlabeled_weak_transform: Optional[Callable] = None,
+    unlabeled_strong_transform: Optional[Callable] = None,
+):
     set_determinism(seed=seed)
+
     train_samples, val_samples = _collect_paths(in_dir)
-    labeled_samples, unlabeled_samples = _split_labeled_unlabeled(train_samples, labeled_fraction=labeled_fraction, labeled_patient_ids=labeled_patient_ids, seed=seed)
+    labeled_samples, unlabeled_samples = _split_labeled_unlabeled(
+        train_samples, labeled_fraction=labeled_fraction, labeled_patient_ids=labeled_patient_ids, seed=seed
+    )
+
     labeled_transform = labeled_transform or get_train_transforms()
     val_transform = val_transform or get_test_transforms()
     unlabeled_weak_transform = unlabeled_weak_transform or get_unlabeled_weak_transforms()
     unlabeled_strong_transform = unlabeled_strong_transform or get_unlabeled_strong_transforms()
-    Base = CacheDataset if cache else Dataset
-    labeled_ds = Base(data=labeled_samples, transform=labeled_transform, cache_rate=cache_rate)
-    val_ds = Base(data=val_samples, transform=val_transform, cache_rate=cache_rate)
-    unlabeled_dual_ds = DualViewUnlabeledDataset(data=unlabeled_samples, weak_transform=unlabeled_weak_transform, strong_transform=unlabeled_strong_transform, cache=cache, cache_rate=cache_rate)
-    labeled_loader = DataLoader(labeled_ds, batch_size=batch_size_labeled, shuffle=True)
+
+    # --- Build labeled & val datasets with the correct class/args ---
+    if cache:
+        labeled_ds = CacheDataset(data=labeled_samples, transform=labeled_transform, cache_rate=cache_rate)
+        val_ds     = CacheDataset(data=val_samples,     transform=val_transform,     cache_rate=cache_rate)
+    else:
+        labeled_ds = Dataset(data=labeled_samples, transform=labeled_transform)
+        val_ds     = Dataset(data=val_samples,     transform=val_transform)
+
+    # --- Unlabeled dual-view dataset already handles cache vs. non-cache internally ---
+    unlabeled_dual_ds = DualViewUnlabeledDataset(
+        data=unlabeled_samples,
+        weak_transform=unlabeled_weak_transform,
+        strong_transform=unlabeled_strong_transform,
+        cache=cache,
+        cache_rate=cache_rate,
+    )
+
+    labeled_loader   = DataLoader(labeled_ds,   batch_size=batch_size_labeled,   shuffle=True)
     unlabeled_loader = DataLoader(unlabeled_dual_ds, batch_size=batch_size_unlabeled, shuffle=True)
-    val_loader = DataLoader(val_ds, batch_size=batch_size_val, shuffle=False)
+    val_loader       = DataLoader(val_ds,       batch_size=batch_size_val,       shuffle=False)
+
     print(f"[SemiSup] Labeled: {len(labeled_ds)}, Unlabeled: {len(unlabeled_dual_ds)}, Val: {len(val_ds)}")
     return labeled_loader, unlabeled_loader, val_loader
