@@ -1,0 +1,31 @@
+seed: 0
+num_classes: 2
+in_modalities: 3
+model:
+  channels: [32,64,128,256,512]
+  rank: 8
+optim:
+  name: adamw
+  lr: 0.0003
+  weight_decay: 0.05
+  ema: 0.99
+train:
+  epochs: 200
+  batch_labeled: 1
+  batch_unlabeled: 1
+  batch_val: 1
+  labeled_fraction: 0.1
+  cache: false
+  cache_rate: 1.0
+  amp: true
+loss_weights:
+  unsup: 8.0
+  cdcr: 0.5
+  skc: 0.1
+  ab: 0.5
+  nc: 0.5
+smc:
+  conf_drop_fraction: 0.2
+io:
+  ckpt_dir: checkpoints
+  log_interval: 25

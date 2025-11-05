@@ -1,0 +1,10 @@
+monai>=1.3.2
+torch>=2.1
+torchvision>=0.16
+numpy
+nibabel
+tqdm
+pyyaml
+scikit-image
+scipy
+einops
