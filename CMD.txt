@@ -1,5 +1,8 @@
 For train:
-python -m src.train --data_root /content/drive/MyDrive/Code/sage_ssl_repo/data/123 --outdir /content/drive/MyDrive/Code/sage_ssl_repo/outputs/exp1 --epochs 6 --labeled_fraction 0.1
+python -m src.train --data_root /content/drive/MyDrive/Code/sage_ssl_repo/data/123 --outdir /content/drive/MyDrive/Code/sage_ssl_repo/outputs/exp1 --epochs 6 
+
+
+python -m src.train --data_root data\123 --outdir outputs\exp1 --epochs 6 
 
 
 For Valid

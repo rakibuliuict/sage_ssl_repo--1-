@@ -6,6 +6,8 @@ import torch
 from torch.optim import AdamW, SGD
 from torch.cuda.amp import GradScaler, autocast
 from tqdm import tqdm
+import torch
+import torch.nn.functional as F
 
 from src.dataloaders.semisup_loader import prepare_semi_supervised
 from src.models.sage_ssl import SAGESSL
@@ -35,9 +37,17 @@ def evaluate(model, val_loader, device):
     for batch in val_loader:
         x = torch.cat([batch["t2w"], batch["adc"], batch["hbv"]], dim=1).to(device, non_blocking=True)
         y = batch["seg"].squeeze(1).long().to(device, non_blocking=True)
+
         out = model(xL=x, xU=None, train=False)
-        y_one = torch.nn.functional.one_hot(y, num_classes=out["pL"].shape[1]).permute(0, 3, 1, 2).float()
-        total += dice_score(out["pL"], y_one)
+        logits = out["pL"]                           # [B,C,H,W] or [B,C,D,H,W]
+        num_classes = logits.shape[1]
+        y_one = F.one_hot(y, num_classes=num_classes)
+        if logits.ndim == 4:                         # -> [B,C,H,W]
+            y_one = y_one.permute(0, 3, 1, 2).float()
+        else:                                        # -> [B,C,D,H,W]
+            y_one = y_one.permute(0, 4, 1, 2, 3).float()
+
+        total += dice_score(logits, y_one)           # assumes dice_score accepts logits & one-hot (2D/3D)
         n += 1
     return total / max(n, 1)
 

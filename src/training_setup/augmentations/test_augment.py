@@ -1,14 +1,16 @@
 from monai.transforms import (
-    LoadImaged, EnsureChannelFirstd, Orientationd, Spacingd,
-    ScaleIntensityRanged, EnsureTyped, Compose
+    EnsureChannelFirstd, Compose, LoadImaged, 
+    Resized, ToTensord, ConcatItemsd, 
+    NormalizeIntensityd, Orientationd
 )
+
 def get_test_transforms():
-    keys = ["t2w","adc","hbv","seg"]
     return Compose([
-        LoadImaged(keys=keys),
-        EnsureChannelFirstd(keys=keys),
-        Orientationd(keys=keys, axcodes='RAS'),
-        Spacingd(keys=keys, pixdim=(1.0,1.0,1.0), mode=('bilinear','bilinear','bilinear','nearest')),
-        ScaleIntensityRanged(keys=["t2w","adc","hbv"], a_min=0, a_max=1000, b_min=0.0, b_max=1.0, clip=True),
-        EnsureTyped(keys=keys),
+        LoadImaged(keys=["t2w", "adc", "hbv", "seg"]),
+        EnsureChannelFirstd(keys=["t2w", "adc", "hbv", "seg"]),
+        ConcatItemsd(keys=["t2w", "adc", "hbv"], name="img"),
+        Resized(keys=["img", "seg"], spatial_size=(144, 128, 16)),
+        Orientationd(keys=["img", "seg"], axcodes="RAS"),
+        NormalizeIntensityd(keys="img", nonzero=True, channel_wise=True),
+        ToTensord(keys=["img", "seg"]),
     ])
