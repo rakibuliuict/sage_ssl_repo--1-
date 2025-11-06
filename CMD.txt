@@ -5,5 +5,7 @@ python -m src.train --data_root /content/drive/MyDrive/Code/sage_ssl_repo/data/1
 python -m src.train --data_root data\picai_data --outdir outputs\exp1 --epochs 10 
 
 
+Retrain from a 
+
 For Valid
 python -m src.train --data_root /path/to/DATA_ROOT --outdir outputs/exp1 --eval_only --ckpt outputs/exp1/checkpoints/best.pt
