@@ -79,9 +79,9 @@ def _collect_unlabeled(in_dir: str) -> List[Dict]:
     Build unlabeled samples from UnlabeledVolume/* joined by pid.
     returns [{"patient_id","t2w","adc","hbv"}, ...]
     """
-    t2w = sorted(glob(os.path.join(in_dir, "UnlabeledVolumes", "t2w", "*.nii.gz")))
-    adc = sorted(glob(os.path.join(in_dir, "UnlabeledVolumes", "adc", "*.nii.gz")))
-    hbv = sorted(glob(os.path.join(in_dir, "UnlabeledVolumes", "hbv", "*.nii.gz")))
+    t2w = sorted(glob(os.path.join(in_dir, "unlab_data", "t2w", "*.nii.gz")))
+    adc = sorted(glob(os.path.join(in_dir, "unlab_data", "adc", "*.nii.gz")))
+    hbv = sorted(glob(os.path.join(in_dir, "unlab_data", "hbv", "*.nii.gz")))
 
     i_t2w = _index_by_pid(t2w)
     i_adc = _index_by_pid(adc)
