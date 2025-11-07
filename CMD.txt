@@ -1,12 +1,13 @@
 For train:
-python -m src.train --data_root /content/drive/MyDrive/Code/sage_ssl_repo/data/123 --outdir /content/drive/MyDrive/Code/sage_ssl_repo/outputs/exp1 --epochs 6 
+python -m src.train --data_root data\123 --outdir outputs\exp2\checkpoints\exp1 --epochs 6 
 
 
 python -m src.train --data_root data\picai_data --outdir outputs\exp1 --epochs 10 
 
 
 Retrain from a epochs
-python -m src.train --data_root /path/to/data --pretrain_ckpt outputs/exp1/checkpoints/best_003.pt --start_from_epoch 5
+
+python -m src.train --data_root /content/drive/MyDrive/Code/sage_ssl_repo/data/picai_data --pretrain_ckpt /content/drive/MyDrive/Code/sage_ssl_repo/outputs/exp2/checkpoints/best_006.pt --start_from_epoch 6 --outdir /content/drive/MyDrive/Code/sage_ssl_repo/outputs/exp2 --epochs 20
 
 
 For Valid

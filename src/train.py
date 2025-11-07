@@ -274,6 +274,7 @@ from torch.optim import AdamW, SGD
 from torch.cuda.amp import GradScaler, autocast
 from tqdm import tqdm
 import torch.nn.functional as F
+import pandas as pd
 
 from src.dataloaders.semisup_loader import prepare_semi_supervised
 from src.models.sage_ssl import SAGESSL
@@ -328,6 +329,31 @@ def evaluate(model, val_loader, device):
         total += dice_score(logits, y_one)
         n += 1
     return total / max(n, 1)
+
+def _save_dice_to_excel(outdir: str, epoch_num: int, dice_value: float, fname: str = "metrics.xlsx"):
+    """
+    Append/overwrite a row (epoch, dice) in an Excel file located at `outdir/fname`.
+    If the file exists, we deduplicate by epoch (keeping the latest value).
+    """
+    os.makedirs(outdir, exist_ok=True)
+    path = os.path.join(outdir, fname)
+    row = pd.DataFrame([{"epoch": int(epoch_num), "dice": float(dice_value)}])
+
+    if os.path.exists(path):
+        try:
+            old = pd.read_excel(path)
+            df = pd.concat([old, row], ignore_index=True)
+        except Exception:
+            # If the existing file is unreadable, start fresh
+            df = row
+    else:
+        df = row
+
+    # keep last occurrence for each epoch
+    df = df.drop_duplicates(subset=["epoch"], keep="last").sort_values("epoch")
+    # write (overwrite file) to keep a clean single sheet
+    with pd.ExcelWriter(path, engine="openpyxl", mode="w") as w:
+        df.to_excel(w, index=False, sheet_name="metrics")
 
 
 def _extract_views(batch_u):
@@ -457,6 +483,8 @@ def main():
     if args.eval_only:
         val_dice = evaluate(model, val_loader, device)
         print(f"[Eval] Dice: {val_dice:.4f}")
+        print(f"[Eval] Dice: {val_dice:.4f}")
+        _save_dice_to_excel(args.outdir, -1, float(val_dice))
         return
 
     # --- Train ---
@@ -534,6 +562,9 @@ def main():
         # --- EMA validation ---
         ema.apply_to(model)
         val_dice = evaluate(model, val_loader, device)
+
+        # save (epoch is 1-based in your prints)
+        _save_dice_to_excel(args.outdir, epoch + 1, float(val_dice))
 
         # --- Save top-2 best checkpoints ---
         if not hasattr(main, "best_models"):

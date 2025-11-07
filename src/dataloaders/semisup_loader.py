@@ -30,10 +30,10 @@ def _collect_labeled(in_dir: str) -> List[Dict]:
     Build labeled samples from TrainVolume/* joined by pid:
     returns [{"patient_id", "t2w","adc","hbv","seg"}, ...]
     """
-    t2w = sorted(glob(os.path.join(in_dir, "TrainVolumes", "t2w", "*.nii.gz")))
-    adc = sorted(glob(os.path.join(in_dir, "TrainVolumes", "adc", "*.nii.gz")))
-    hbv = sorted(glob(os.path.join(in_dir, "TrainVolumes", "hbv", "*.nii.gz")))
-    seg = sorted(glob(os.path.join(in_dir, "Binary_TrainSegmentation", "*.nii.gz")))
+    t2w = sorted(glob(os.path.join(in_dir, "train", "images", "t2w", "*.nii.gz")))
+    adc = sorted(glob(os.path.join(in_dir, "train", "images", "adc", "*.nii.gz")))
+    hbv = sorted(glob(os.path.join(in_dir, "train", "images", "hbv", "*.nii.gz")))
+    seg = sorted(glob(os.path.join(in_dir, "train", "labels", "*.nii.gz")))
 
     i_t2w = _index_by_pid(t2w)
     i_adc = _index_by_pid(adc)
@@ -54,10 +54,10 @@ def _collect_val(in_dir: str) -> List[Dict]:
     """
     Build validation samples from ValidVolume/* joined by pid.
     """
-    t2w = sorted(glob(os.path.join(in_dir, "ValidVolumes", "t2w", "*.nii.gz")))
-    adc = sorted(glob(os.path.join(in_dir, "ValidVolumes", "adc", "*.nii.gz")))
-    hbv = sorted(glob(os.path.join(in_dir, "ValidVolumes", "hbv", "*.nii.gz")))
-    seg = sorted(glob(os.path.join(in_dir, "Binary_ValidSegmentation", "*.nii.gz")))
+    t2w = sorted(glob(os.path.join(in_dir, "valid", "images", "t2w", "*.nii.gz")))
+    adc = sorted(glob(os.path.join(in_dir, "valid", "images", "adc", "*.nii.gz")))
+    hbv = sorted(glob(os.path.join(in_dir, "valid", "images", "hbv", "*.nii.gz")))
+    seg = sorted(glob(os.path.join(in_dir, "valid", "labels", "*.nii.gz")))
 
     i_t2w = _index_by_pid(t2w)
     i_adc = _index_by_pid(adc)
