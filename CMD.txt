@@ -12,3 +12,11 @@ python -m src.train --data_root /content/drive/MyDrive/Code/sage_ssl_repo/data/p
 
 For Valid
 python -m src.train --data_root /path/to/DATA_ROOT --outdir outputs/exp1 --eval_only --ckpt outputs/exp1/checkpoints/best.pt
+
+
+
+SDCL
+python -m src.train --model sdcl_3d --data_root E:\Dataset\PICAI\123 --outdir outputs\exp3 --epochs 3
+
+Legacy SAGE
+python -m src.train --model sage_ssl --data_root /path/to/DATA_ROOT --outdir outputs/sage

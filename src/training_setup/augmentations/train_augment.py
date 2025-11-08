@@ -10,7 +10,7 @@ def get_train_transforms():
         LoadImaged(keys=["t2w", "adc", "hbv", "seg"]),
         EnsureChannelFirstd(keys=["t2w", "adc", "hbv", "seg"]),
         ConcatItemsd(keys=["t2w", "adc", "hbv"], name="img"),
-        Resized(keys=["img", "seg"], spatial_size=(144, 128, 16)),
+        Resized(keys=["img", "seg"], spatial_size=(256, 256, 16)),
         RandAffined(keys=["img", "seg"], prob=0.2, translate_range=10.0),
         Orientationd(keys=["img", "seg"], axcodes="RAS"),
         RandFlipd(keys=["img", "seg"], spatial_axis=[0], prob=0.5),

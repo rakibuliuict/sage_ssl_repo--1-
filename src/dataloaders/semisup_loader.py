@@ -33,7 +33,7 @@ def _collect_labeled(in_dir: str) -> List[Dict]:
     t2w = sorted(glob(os.path.join(in_dir, "train", "images", "t2w", "*.nii.gz")))
     adc = sorted(glob(os.path.join(in_dir, "train", "images", "adc", "*.nii.gz")))
     hbv = sorted(glob(os.path.join(in_dir, "train", "images", "hbv", "*.nii.gz")))
-    seg = sorted(glob(os.path.join(in_dir, "train", "labels", "*.nii.gz")))
+    seg = sorted(glob(os.path.join(in_dir, "train", "labels","seg", "*.nii.gz")))
 
     i_t2w = _index_by_pid(t2w)
     i_adc = _index_by_pid(adc)
@@ -57,7 +57,7 @@ def _collect_val(in_dir: str) -> List[Dict]:
     t2w = sorted(glob(os.path.join(in_dir, "valid", "images", "t2w", "*.nii.gz")))
     adc = sorted(glob(os.path.join(in_dir, "valid", "images", "adc", "*.nii.gz")))
     hbv = sorted(glob(os.path.join(in_dir, "valid", "images", "hbv", "*.nii.gz")))
-    seg = sorted(glob(os.path.join(in_dir, "valid", "labels", "*.nii.gz")))
+    seg = sorted(glob(os.path.join(in_dir, "valid", "labels","seg", "*.nii.gz")))
 
     i_t2w = _index_by_pid(t2w)
     i_adc = _index_by_pid(adc)

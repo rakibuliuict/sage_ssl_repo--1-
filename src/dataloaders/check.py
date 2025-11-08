@@ -42,7 +42,7 @@ def _summarize_sample(sample):
 
 
 def main():
-    in_dir = r"K:\My Drive\Code\sage_ssl_repo (1)\data\123"
+    in_dir = r"E:\Dataset\PICAI\ssl_final_data"
 
     labeled_loader, unlabeled_loader, val_loader = prepare_semi_supervised(
         in_dir=in_dir,
