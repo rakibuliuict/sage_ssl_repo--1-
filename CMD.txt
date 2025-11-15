@@ -16,7 +16,8 @@ python -m src.train --data_root /path/to/DATA_ROOT --outdir outputs/exp1 --eval_
 
 
 SDCL
-python -m src.train --model sdcl_3d --data_root E:\Dataset\PICAI\123 --outdir outputs\exp3 --epochs 3
+python -m src.train --model sdcl_3d --data_root E:\Dataset\PICAI\ssl_final_data\picai_144_128_16 --outdir E:\outputs --epochs 3
+
 
 Legacy SAGE
 python -m src.train --model sage_ssl --data_root /path/to/DATA_ROOT --outdir outputs/sage
